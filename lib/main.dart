@@ -31,10 +31,30 @@ class MyApp extends StatelessWidget {
   Widget body() {
     return Container(
       padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.red,
-      ),
-      child: cols()
+      // decoration: BoxDecoration(
+      //   color: Colors.red,
+      // ),
+      child: testList()
+    );
+  }
+
+  Widget testList() {
+    // List<String> items = [];
+    // for (var i = 0; i < 100; i++) 
+    //   items.add('a $i');
+    List<String> items = List.generate(100, (index) => '리스트 테스트 $index');
+
+    // return Column(
+    //   children: List.generate(items.length, (index) => Text(items[index]))
+    // );
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, i) {
+        return ListTile(
+          title: Text(items[i]),
+          subtitle: Text('this is test $i ㅎㅎㅎㅎㅎ'),
+        );
+      } 
     );
   }
   
