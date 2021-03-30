@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
 
 class AppState {
   bool loading;
-  String user;
+  FirebaseUser user;
 
   AppState(this.loading, this.user);
 }
@@ -24,24 +26,26 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
-  final app = AppState(true, '');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final app = AppState(false, null);
 
-  @override
-  void initState() {
-    super.initState();
-    _delay();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _delay();
+  // }
 
-  _delay() {
-    Future.delayed(Duration(seconds: 1), () {
-      setState(() => app.loading = false);
-    });
-  }
+  // _delay() {
+  //   Future.delayed(Duration(seconds: 1), () {
+  //     setState(() => app.loading = false);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     if (app.loading) return _loading();
-    if (app.user.isEmpty) return _signin();
+    if (app.user == null) return _login();
     return _main();
   }
 
@@ -51,7 +55,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         body: Center(child: CircularProgressIndicator()));
   }
 
-  Widget _signin() {
+  Widget _login() {
     return Scaffold(
         appBar: AppBar(title: Text('login page')),
         body: Center(
@@ -59,15 +63,11 @@ class _HomeWidgetState extends State<HomeWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('id'),
-            Text('pass'),
             RaisedButton(
                 child: Text('login'),
                 onPressed: () {
                   setState(() {
-                    app.loading = true;
-                    app.user = 'my name';
-                    _delay();
+                    _signIn();
                   });
                 })
           ],
@@ -83,13 +83,46 @@ class _HomeWidgetState extends State<HomeWidget> {
                 icon: Icon(Icons.account_circle),
                 onPressed: () {
                   setState(() {
-                    app.user = '';
-                    app.loading = true;
-                    _delay();
+                    _signOut();
                   });
                 })
           ],
         ),
         body: Center(child: Text('contents')));
+  }
+
+  Future<String> _signIn() async {
+    setState(() {
+      app.loading = true;
+    });
+
+    final GoogleSignInAccount googleSignInAccount =
+        await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final AuthResult authResult = await _auth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
+
+    print(user);
+
+    setState(() {
+      app.loading = false;
+      app.user = user;
+    });
+
+    return 'success';
+  }
+
+  void _signOut() async {
+    await _googleSignIn.signOut();
+    setState(() {
+      app.user = null;
+    });
   }
 }
