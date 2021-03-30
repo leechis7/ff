@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
 
 class AppState {
   bool loading;
-  FirebaseUser user;
+  //FirebaseUser user;
+  User user;
 
   AppState(this.loading, this.user);
 }
@@ -77,7 +78,8 @@ class _HomeWidgetState extends State<HomeWidget> {
   Widget _main() {
     return Scaffold(
         appBar: AppBar(
-          title: Text(app.user),
+          //title: Text(app.user),
+          title: Text(app.user.displayName),
           actions: [
             IconButton(
                 icon: Icon(Icons.account_circle),
@@ -101,13 +103,17 @@ class _HomeWidgetState extends State<HomeWidget> {
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
+    //final AuthCredential credential = GoogleAuthProvider.getCredential(
+    final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication.accessToken,
       idToken: googleSignInAuthentication.idToken,
     );
 
-    final AuthResult authResult = await _auth.signInWithCredential(credential);
-    final FirebaseUser user = authResult.user;
+    //final AuthResult authResult = await _auth.signInWithCredential(credential);
+    //final FirebaseUser user = authResult.user;
+    final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+    User user = authResult.user;
 
     print(user);
 
