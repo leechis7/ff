@@ -7,79 +7,50 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: home());
+    return MaterialApp(home: HomeWidget());
   }
+}
 
-  Widget home() {
+class HomeWidget extends StatefulWidget {
+  @override
+  _HomeWidgetState createState() => _HomeWidgetState();
+}
+
+class _HomeWidgetState extends State<HomeWidget> {
+  int i = 0;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            leading: Icon(Icons.menu),
-            title: Text('hiru~'),
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.mode_comment),
-                  onPressed: () {
-                    print('눌렀어');
-                  }),
-              IconButton(
-                  icon: Icon(Icons.money_off), onPressed: () => print('애로우!'))
-            ]),
-        body: body()
-    );
+          title: Text('hiru~'),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.send),
+                onPressed: () {
+                  setState(() => i++);
+                })
+          ],
+        ),
+        body: XXX(i: i));
+  }
+}
+
+class XXX extends StatelessWidget {
+  const XXX({Key key, this.i: 0}) : super(key: key);
+  final int i;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: _change(i));
   }
 
-  Widget body() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      // decoration: BoxDecoration(
-      //   color: Colors.red,
-      // ),
-      child: testList()
-    );
-  }
-
-  Widget testList() {
-    // List<String> items = [];
-    // for (var i = 0; i < 100; i++) 
-    //   items.add('a $i');
-    List<String> items = List.generate(100, (index) => '리스트 테스트 $index');
-
-    // return Column(
-    //   children: List.generate(items.length, (index) => Text(items[index]))
-    // );
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, i) {
-        return ListTile(
-          title: Text(items[i]),
-          subtitle: Text('this is test $i ㅎㅎㅎㅎㅎ'),
-        );
-      } 
-    );
-  }
-  
-  Widget cols() {
-    return Column(
-      children: [
-        rows(), rows(), rows()
-      ],
-    );
-  }
-  
-  Widget rows() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Text('111'),
-        Text('222'),
-        Text('333'),
-        Text('444'),
-        Text('555'),
-        Text('666'),
-        Text('777'),
-        Text('888'),
-        Text('999'),
-      ],
-    );
+  Widget _change(int i) {
+    if (i == 0)
+      return CircularProgressIndicator();
+    else if (i == 1)
+      return Icon(Icons.settings);
+    else
+      return Text('xxx: $i');
   }
 }
